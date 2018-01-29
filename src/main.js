@@ -20,6 +20,16 @@ Vue.use(UserComponent)
 //引用element上传组件
 Vue.use(ElementUI)
 
+router.beforeEach((to, from, next) => {
+  let authorization = localStorage.getItem('authorization')
+  if(to.path=='/'){
+    if(!authorization){
+      router.push({name:'Login',query:{random:Math.random()}})
+    }
+  }
+  next()
+})
+
 //挂载js
 Vue.prototype.$http = Axios
 Vue.prototype.$fun = fun
