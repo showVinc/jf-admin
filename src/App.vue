@@ -42,15 +42,15 @@
     mounted(){
       let self = this
       let uid = localStorage.getItem('authorization')
-      if(uid){
-        self.$http.get(`${process.env.API.API}/user/pi`).then(res=>{
-          if(res.data.errcode=='0'){
-            this.$store.state.userInfo = res.data.data
-          }
-        }).catch(err=>{
-          console.log(err)
-        })
-      }
+//      if(uid){
+//        self.$http.get(`${process.env.API.API}/user/pi`).then(res=>{
+//          if(res.data.errcode=='0'){
+//            this.$store.state.userInfo = res.data.data
+//          }
+//        }).catch(err=>{
+//          console.log(err)
+//        })
+//      }
     }
   }
 </script>
