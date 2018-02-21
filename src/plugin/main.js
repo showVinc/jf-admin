@@ -1,4 +1,4 @@
-import axios from 'axios'
+import axios from '@/plugin/axios'
 
 // const getRepoData = (url,params) => {
 //   return new Promise((resolve, reject) => {
