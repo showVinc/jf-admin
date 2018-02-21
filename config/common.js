@@ -1,5 +1,5 @@
 let version = 'v1'    //  版本
-let branch = 'release'    //  要推送的分支
+let branch = 'master'    //  要推送的分支
 let http_url = ''
 let http_api = ''
 let dev_url = 'http://192.168.10.101'
@@ -11,7 +11,7 @@ switch(branch) {
     break;
   case 'master':
     http_url = 'http://wwwtest.klocl.com:8080'
-    http_api = 'http://apitest.klocl.com:8080'
+    http_api = 'http://119.28.41.251'
     break;
   case 'release':
     http_url = 'http://wwwrelease.klocl.com'

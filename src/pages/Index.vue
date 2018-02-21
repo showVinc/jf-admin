@@ -2,7 +2,10 @@
   <div class="home">
     <left-nav></left-nav>
     <div class="main">
-      内容
+      <public-head></public-head>
+      <div class="mainWrap">
+        我是内容
+      </div>
     </div>
   </div>
 </template>
@@ -59,7 +62,12 @@
     justify-content: space-between;
     .main{
       width: calc(~'100% - 200px');
-      background: #fff;
+      .mainWrap{
+        margin: 15px;
+        background: #fff;
+        padding: 15px;
+        box-sizing: border-box;
+      }
     }
   }
 </style>

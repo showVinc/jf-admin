@@ -1,61 +1,83 @@
 <template>
   <div class="leftNav">
-    <el-menu
-      default-active="2"
-      class="el-menu-vertical-demo leftNavToolbar"
-      @open="handleOpen"
-      @close="handleClose"
-      background-color="#333"
-      text-color="#fff"
-      active-text-color="#ffd04b">
-      <el-submenu v-for="res,num in nav" :key="num" :index="`${num}`">
-        <template slot="title">
-          <i class="el-icon-location"></i>
-          <span>{{res.name}}</span>
-        </template>
-        <el-menu-item-group v-for="item,index in newsList" :key="index">
-          <template slot="title">{{item.name}}</template>
-          <el-menu-item v-for="el,key in item.children" :key="key" :index="`${key}`">{{el.name}}</el-menu-item>
-        </el-menu-item-group>
-      </el-submenu>
-    </el-menu>
+    <ul class="ulWrap">
+      <li v-for="item,index in nav" class="liWrap" :key="index">
+        <div @click="navNum = index">
+          {{item.name}}
+          <i class="el-icon-arrow-down" :class="{navActive:navNum == index}"></i>
+        </div>
+        <ul v-show="navNum == index">
+          <li v-for="el in item.content.children" @click="detailClick(el)">
+            {{el.name}}
+          </li>
+        </ul>
+      </li>
+    </ul>
   </div>
 </template>
 <script>
   export default {
+    props:['num'],
     data(){
       return {
+        navNum:null,
         nav:[
           {
-            name:'用户'
+            name:'资讯管理',
+            content:{
+              name:'文章管理',
+              children:[
+                {
+                  name:'文章列表',
+                  url:'/news'
+                },
+                {
+                  name:'新增文章',
+                  url:'/news/add'
+                },
+                {
+                  name:'资讯分类',
+                  url:'/news/category'
+                },
+                {
+                  name:'资讯列表',
+                  url:'/news/categoryList'
+                }
+              ]
+            }
           },
           {
-            name:'咨询管理'
-          }
+            name:'用户管理',
+            content:{
+              name:'文章管理',
+              children:[
+                {
+                  name:'文章列表',
+                  url:'/news'
+                },
+                {
+                  name:'测试多数据',
+                  url:'/news/detail'
+                }
+              ]
+            }
+          },
         ],
-        newsList:[
-          {
-            name:'文章管理',
-            children:[
-              {
-                name:'文章列表'
-              },
-              {
-                name:'测试多数据'
-              }
-            ]
-          }
-        ]
       }
-
     },
     methods:{
+      detailClick(item){
+        this.$router.push(item.url)
+      },
       handleOpen(key, keyPath) {
         console.log(key, keyPath);
       },
       handleClose(key, keyPath) {
         console.log(key, keyPath);
       }
+    },
+    mounted(){
+      this.navNum = this.num || 0
     }
   }
 </script>
@@ -64,6 +86,50 @@
     width: 200px;
     min-height: 100vh;
     background: #324157;
+    .ulWrap{
+      .liWrap{
+        min-height: 40px;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        font-size: 14px;
+        color: #bfcbd9;
+        div{
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          position: relative;
+          width: 100%;
+          min-height: 40px;
+          &:hover{
+            background: #48576a;
+          }
+          i{
+            position: absolute;
+            right: 15px;
+            top:calc(~'50% - 7px');
+            &.navActive{
+              transition: all .4s ease-in-out;
+              transform: rotate(180deg);
+            }
+          }
+        }
+        ul{
+          width: 100%;
+          background: #1f2d3d;
+          li{
+            min-height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            &:hover{
+              background: #48576a;
+            }
+          }
+        }
+      }
+    }
   }
 </style>
 <style type="text/less" lang="less">

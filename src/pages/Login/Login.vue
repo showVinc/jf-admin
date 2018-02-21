@@ -1,5 +1,8 @@
 <template>
   <div class="login">
+    <div class="logo">
+      <img src="../../assets/images/public_img/logo.png">
+    </div>
     <div class="loginMain">
       <div class="loginTit">
         {{$t('login')}}
@@ -15,7 +18,7 @@
             </div>
           </div>
           <div class="inputShow">
-            <input type="password" v-model="post.password" :class="{'active':isPassword}" ref="inputPassword" @blur="errBlur" placeholder="请输入密码">
+            <input type="password" v-model="post.password"  @keyup.13="sub" :class="{'active':isPassword}" ref="inputPassword" @blur="errBlur" placeholder="请输入密码">
             <div class="errInfo">
               <transition name="fade">
                 <p v-show="isPassword">{{msg}}</p>
@@ -30,7 +33,9 @@
         </div>
       </div>
     </div>
-    <foot-public></foot-public>
+    <div class="foot">
+      © Copyright 2018 金丰 版权所有 All Rights Reserved.
+    </div>
   </div>
 </template>
 <script>
@@ -71,39 +76,52 @@
         if(self.msg){
           return false
         }else{
-          localStorage.setItem('authorization','askdsakdjhsaouuyoiq3j4eoiwqe9802174983298jzxdjcxhzkjz')
-          self.$router.push('/')
-//          self.$http.post(`${process.env.API.API}/user/li`,{email:self.post.email,password:SHA1(self.post.password)}).then(res=>{
-//            if(res.data.errcode=='0'){
-//              self.$notify({
-//                message:self.$t('loginSuccess'),
-//                type: 'success'
-//              });
-//              localStorage.setItem('authorization',res.data.authorization)
-//             self.$router.push({name:'Index',params:{isOne:1}})
-//            }else{
-//              self.$notify({
-//                message:res.data.errmsg,
-//                type: 'warning'
-//              });
-//            }
-//          }).catch(err=>{
-//            console.log(err)
-//          })
+          self.$fun.post(`${process.env.API.API}/admin/ali`,{username:self.post.user,password:SHA1(self.post.password)},res=>{
+            if(res.errcode=='0'){
+              self.$notify({
+                message:self.$t('loginSuccess'),
+                type: 'success'
+              });
+              localStorage.setItem('authorization',res.authorization)
+              self.$router.push('/')
+            }else{
+              self.$notify({
+                message:res.data.errmsg,
+                type: 'warning'
+              });
+            }
+          })
         }
       }
     },
     mounted(){
       localStorage.removeItem('authorization')
+      this.$http.get(`${process.env.API.API}/ad/index`).then(res=>{
+        console.log(res)
+      })
     }
   }
 </script>
 <style type="text/less" lang="less">
   .login{
-    min-height: calc(~'100vh - 150px');
+    min-height:100vh;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
+    .logo{
+      margin-bottom: 60px;
+      img{
+        min-width: 180px;
+      }
+    }
+    .foot{
+      text-align: center;
+      color: #7a8ca5;
+      margin-top: 150px;
+      padding-bottom: 20px;
+      font-size: 14px;
+    }
   }
   .loginMain {
     padding: 60px 50px;

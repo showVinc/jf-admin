@@ -8,7 +8,7 @@ let service = axios.create({
 // 添加请求拦截器
 service.interceptors.request.use(function (config) {
   // 在发送请求之前做些什么
-  config.headers['Accept-Language'] = localStorage.getItem('lang')?localStorage.getItem('lang'):'zh-cn'
+  console.log(localStorage.getItem('authorization'))
   if(localStorage.getItem('authorization')){
     config.headers['Authorization'] = localStorage.getItem('authorization')
   }

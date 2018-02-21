@@ -14,8 +14,14 @@ import fun from '@/plugin/main'
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-default/index.css'
 import UserComponent from '@/components/index'
+import VueQuillEditor from 'vue-quill-editor'
+// require styles
+import 'quill/dist/quill.core.css'
+import 'quill/dist/quill.snow.css'
+import 'quill/dist/quill.bubble.css'
 
 Vue.use(UserComponent)
+Vue.use(VueQuillEditor)
 
 //引用element上传组件
 Vue.use(ElementUI)

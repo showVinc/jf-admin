@@ -30,14 +30,19 @@ export default new Router({
       component: resolve=>require(['@/pages/News/Index'],resolve)
     },
     {
-      path: '/news/detail',
-      name: 'NewsDetail',
-      component: resolve=>require(['@/pages/News/Detail'],resolve)
+      path: '/news/add',
+      name: 'NewsAdd',
+      component: resolve=>require(['@/pages/News/Add'],resolve)
     },
     {
-      path: '/news/subject',
-      name: 'NewsSubject',
-      component: resolve=>require(['@/pages/News/Subject'],resolve)
+      path: '/news/category',
+      name: 'NewsCategory',
+      component: resolve=>require(['@/pages/News/Category'],resolve)
+    },
+    {
+      path: '/news/categoryList',
+      name: 'NewsCategoryList',
+      component: resolve=>require(['@/pages/News/CategoryList'],resolve)
     },
     //用户类
     {

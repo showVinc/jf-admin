@@ -1,96 +1,76 @@
 <template>
-  <div class="news">
-    <head-public></head-public>
-    <nav-public :type="3"></nav-public>
-    <div class="publicMain">
-      <div class="newsDetail">
-        <div class="newsDetailTit">
-          <p>{{detailInfo.title}}</p>
-          <div>
-            {{detailInfo.publish_time}}
-            <span>
-              {{detailInfo.reporter}}
-            </span>
-          </div>
-        </div>
-        <div v-html="detailInfo.content" class="newsDetailContent">
-        </div>
-        <span class="next" @click="$router.push('/news')">
-          <img src="../../assets/images/public_img/arrow.png">
-          {{$t('newsMore')}}
-        </span>
+  <div class="home">
+    <left-nav :num="0"></left-nav>
+    <div class="main">
+      <public-head></public-head>
+      <div class="mainWrap">
+        我是资讯详情
       </div>
     </div>
-    <like-public></like-public>
-    <foot-public></foot-public>
   </div>
 </template>
 <script>
-
   export default {
     data() {
       return {
-        detailInfo:{}
+        loading:false,
+        userInfo:{},
+        bannerInfo:{
+          list:[],
+          page:{
+            p:1,
+            total_pages:1
+          }
+        },
+        lists:{
+          list:[],
+          page:{
+            p:'',
+            total_pages:''
+          }
+        }
       }
     },
     methods: {
-      //点击入口进入对应页面
     },
     created() {
+      let self = this
       window.scrollTo(0,0)
+      setTimeout(()=>{
+        self.userInfo = self.$store.state.userInfo
+      },300)
     },
     mounted(){
       let self = this
-      self.$http.get(`${process.env.API.API}/news/info`,{params:{aid:self.$route.query.aid}}).then(res=>{
-        if(res.data.errcode=='0'){
-          res.data.data.publish_time = self.$moment(res.data.data.publish_time*1000).format('YYYY-MM-DD')
-          self.detailInfo = res.data.data
-        }
-      }).catch(err=>{
-        console.log(err)
-      })
+
+//      self.$http.get(`${process.env.API.API}/dict/brand`,{params:{rows:20,p:1}}).then(res=>{
+//        if(res.data.errcode=='0'){
+//          self.lists.list = res.data.data
+//          self.lists.page = res.data.page
+//        }
+//      }).catch(err=>{
+//        console.log(err)
+//      })
     },
     //获取底部组件
     components: {}
   }
 </script>
 <style lang="less" scoped type="text/less">
-  .news{
-    .newsDetail{
-      .newsDetailTit{
-        margin-bottom: 40px;
-        p{
-          font-size: 24px;
-          color: #333;
-          margin-bottom: 15px;
-        }
-        div{
-          font-size: 13px;
-          color: #999;
-          display: flex;
-          align-items: center;
-          span{
-            margin-left: 30px;
-          }
-        }
-      }
-    }
-    .next{
-      font-size: 13px;
-      color: #007099;
-      margin-top: 40px;
-      display: block;
-      img{
-        margin-right: 10px;
+  .home{
+    display: flex;
+    justify-content: space-between;
+    .main{
+      width: calc(~'100% - 200px');
+      .mainWrap{
+        margin: 15px;
+        background: #fff;
+        padding: 15px;
+        box-sizing: border-box;
       }
     }
   }
 </style>
-<style type="text/less" lang="less">
-  .newsDetailContent{
-    width: 100%;
-    img{
-      max-width: 100%!important;
-    }
-  }
+<style lang="less" type="text/less">
+
 </style>

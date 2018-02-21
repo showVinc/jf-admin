@@ -9,25 +9,17 @@
           style="width: 100%">
           <el-table-column
             prop="title"
-            label="文章标题"
+            label="分类名称"
+            width="180">
+          </el-table-column>
+          <el-table-column
+            prop="level"
+            label="分类级别"
             width="180">
           </el-table-column>
           <el-table-column
             prop="category"
-            label="文章分类"
-            width="180">
-          </el-table-column>
-          <el-table-column
-            prop="author"
-            label="作者">
-          </el-table-column>
-          <el-table-column
-            prop="date"
-            label="发布时间">
-          </el-table-column>
-          <el-table-column
-            prop="state"
-            label="状态">
+            label="所属分类">
           </el-table-column>
           <el-table-column
             fixed="right"
@@ -43,8 +35,8 @@
             </template>
           </el-table-column>
         </el-table>
-        <div class="subBtn" @click="$router.push('/news/add')">
-          新增资讯文章
+        <div class="subBtn" @click="$router.push('/news/Category')">
+          新增资讯分类
         </div>
       </div>
     </div>
@@ -56,10 +48,9 @@
       return {
         tableData: [{
           date: '2016-05-02',
-          author: '王小虎',
+          category: '一级',
           title:'测试标题',
-          category:'测试分类',
-          state:'上架中'
+          level:'测试分类',
         }],
         loading:false,
         userInfo:{},
@@ -68,7 +59,7 @@
     },
     methods: {
       sub(){
-        console.log(this.post.content)
+
       },
     },
     created() {
