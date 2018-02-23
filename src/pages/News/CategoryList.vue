@@ -1,40 +1,52 @@
 <template>
   <div class="home">
     <left-nav :num="0"></left-nav>
-    <div class="main">
+    <div class="main" v-loading="loading">
       <public-head></public-head>
       <div class="mainWrap">
         <el-table
           :data="tableData"
           style="width: 100%">
           <el-table-column
-            prop="title"
-            label="分类名称"
-            width="180">
+            prop="name"
+            label="分类名称">
           </el-table-column>
           <el-table-column
             prop="level"
             label="分类级别"
-            width="180">
+            width="100">
           </el-table-column>
           <el-table-column
-            prop="category"
+            width="120"
+            prop="parent.name"
             label="所属分类">
           </el-table-column>
           <el-table-column
-            fixed="right"
             label="操作"
             width="120">
             <template slot-scope="scope">
               <el-button
-                @click.native.prevent="deleteRow(scope.$index, tableData4)"
+                @click.native.prevent="editor(scope.$index)"
                 type="text"
                 size="small">
-                移除
+                编辑
+              </el-button>
+              <el-button
+                @click.native.prevent="deleteRow(scope.$index)"
+                type="text"
+                size="small">
+                删除
               </el-button>
             </template>
           </el-table-column>
         </el-table>
+        <div class="block" v-show="page.total_count>10">
+          <el-pagination
+            layout="prev, pager, next"
+            :total="page.total_count"
+            @current-change="handleCurrentChange">
+          </el-pagination>
+        </div>
         <div class="subBtn" @click="$router.push('/news/Category')">
           新增资讯分类
         </div>
@@ -46,12 +58,11 @@
   export default {
     data() {
       return {
-        tableData: [{
-          date: '2016-05-02',
-          category: '一级',
-          title:'测试标题',
-          level:'测试分类',
-        }],
+        page:{
+          p:1,
+          total_count:10
+        },
+        tableData: [],
         loading:false,
         userInfo:{},
         post:{}
@@ -60,6 +71,33 @@
     methods: {
       sub(){
 
+      },
+      handleCurrentChange(val){
+        let self = this
+        self.loading = true
+        self.tableData = []
+        self.$fun.get(`${process.env.API.API}/admin/news/arc`,{rows:10,p:val},res=>{
+          for(let v of res.data){
+            v.publish_time = self.$moment(v.publish_time * 1000).format('YYYY-MM-DD HH:mm')
+          }
+          self.tableData = res.data
+          self.page = res.page
+        })
+        setTimeout(()=>{
+          self.loading = false
+        },600)
+      },
+      editor(index){
+        let self = this
+        self.$router.push({path:'/news/category',query:{code:self.tableData[index].code}})
+      },
+      deleteRow(index){
+        let self = this
+        self.$fun.delete(`${process.env.API.API}/admin/news/arc`,{id:self.tableData[index].id},res=>{
+          if(res.errcode=='0'){
+            self.tableData.splice(index,1)
+          }
+        })
       },
     },
     created() {
@@ -71,8 +109,9 @@
     },
     mounted(){
       let self = this
-      self.$fun.get(`${process.env.API.API}/news/list`,{},res=>{
-        console.log(res)
+      self.$fun.get(`${process.env.API.API}/admin/news/arc`,{rows:10},res=>{
+        self.page = res.page
+        self.tableData = res.data
       })
     },
     //获取底部组件

@@ -38,6 +38,28 @@ export default {
       console.log(err);
     }
   },
+  async put(url,data,cb) {
+    try {
+      const value = await axios.put(url,data)
+      if(value.data.errcode=='0'){
+        cb(value.data)
+      }
+      return value;
+    } catch (err) {
+      console.log(err);
+    }
+  },
+  async delete(url,params,cb) {
+    try {
+      const value = await axios.delete(url,{params:params})
+      if(value.data.errcode=='0'){
+        cb(value.data)
+      }
+      return value;
+    } catch (err) {
+      console.log(err);
+    }
+  },
   GetQueryString(name, data) {
     let reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
     data = data || ''

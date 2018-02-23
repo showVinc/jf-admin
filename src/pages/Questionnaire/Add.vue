@@ -1,102 +1,43 @@
 <template>
   <div class="home">
-    <left-nav :num="0"></left-nav>
+    <left-nav :num="1"></left-nav>
     <div class="main">
       <public-head></public-head>
       <div class="mainWrap">
         <ul>
           <li>
             <span>
-              *文章标题
+              *问卷标题
             </span>
             <el-input v-model="post.title" placeholder="请输入内容"></el-input>
           </li>
           <li>
             <span>
-              *文章分类
+              *类型
             </span>
             <el-select v-model="post.category_code" placeholder="请选择">
               <el-option
-                v-if="item.level==2"
-                v-for="item in options"
-                :key="item.code"
+                v-for="item in list"
+                :key="item.kind"
                 :label="item.name"
-                :value="item.code">
+                :value="item.kind">
               </el-option>
             </el-select>
           </li>
           <li>
             <span>
-              来源
+              排序
             </span>
             <el-input v-model="post.source"></el-input>
           </li>
-          <li>
-            <span>
-              作者
-            </span>
-            <el-input v-model="post.author" placeholder="请输入内容"></el-input>
-          </li>
-          <li>
-            <span>
-              浏览量
-            </span>
-            <el-input v-model="post.pv" type="number" :min="0"></el-input>
-          </li>
-          <li>
-            <span>
-              文章推荐
-            </span>
-            <el-select v-model="post.is_recommend" placeholder="请选择">
-              <el-option
-                v-for="item in recommends"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value">
-              </el-option>
-            </el-select>
-          </li>
-          <li>
-            <span>
-              *简介
-            </span>
-            <el-input v-model="post.summary"></el-input>
-          </li>
-          <li>
-            <span>
-              *封面图
-            </span>
-            <el-upload
-              class="avatar-uploader"
-              :action="serverUrl"
-              :headers="header"
-              :show-file-list="false"
-              :on-success="uploadShow"
-              :before-upload="beforeAvatarUpload">
-              <img v-if="imageUrl" :src="imageUrl" class="avatar">
-              <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-            </el-upload>
-          </li>
-          <li>
-            <span>
-              *内容
-            </span>
-            <quill-editor ref="myQuillEditor"
-                          v-model="post.content"
-                          :options="editorOption">
-            </quill-editor>
+        </ul>
+        <ul>
+          <li v-for="item,index in options">
+            选项{{index+1}}
+            <el-input v-model="item.content" style="width: 400px"></el-input>
+            <el-input v-model="item.score" style="width: 100px"></el-input>
           </li>
         </ul>
-        <el-upload
-          class="avatar-uploader imgHide"
-          v-show="false"
-          :action="serverUrl"
-          name="img"
-          :headers="header"
-          :show-file-list="false"
-          :on-success="uploadSuccess"
-          :before-upload="beforeAvatarUpload">
-        </el-upload>
         <div class="subBtn" @click="sub">
           发布
         </div>
@@ -106,49 +47,32 @@
 </template>
 <script>
   import SHA1 from '@/plugin/sha1'
-  const toolbarOptions = [
-    ['bold', 'italic', 'underline', 'strike'],        // toggled buttons
-    ['blockquote', 'code-block'],
-
-    [{'header': 1}, {'header': 2}],               // custom button values
-    [{'list': 'ordered'}, {'list': 'bullet'}],
-    [{'script': 'sub'}, {'script': 'super'}],      // superscript/subscript
-    [{'indent': '-1'}, {'indent': '+1'}],          // outdent/indent
-    [{'direction': 'rtl'}],                         // text direction
-
-    [{'size': ['small', false, 'large', 'huge']}],  // custom dropdown
-    [{'header': [1, 2, 3, 4, 5, 6, false]}],
-
-    [{'color': []}, {'background': []}],          // dropdown with defaults from theme
-    [{'font': []}],
-    [{'align': []}],
-    ['link', 'image', 'video'],
-    ['clean']                                         // remove formatting button
-  ]
   export default {
     data() {
       return {
         serverUrl: `${process.env.API.API}/upload`,
         imageUrl: '',
-        header: {Authorization: sessionStorage.authorization},
-        editorOption:{
-          placeholder: '',
-          theme: 'snow',
-          modules: {
-            toolbar: {
-              container: toolbarOptions,
-              handlers: {
-                'image': function (value) {
-                  if (value) {
-                    document.querySelector('.imgHide input').click()
-                  } else {
-                    this.quill.format('image', false);
-                  }
-                }
-              }
-            }
+        options:[
+          {
+            content:'',
+            score:''
           }
-        },
+        ],
+        list:[
+          {
+            name:'财务状况',
+            kind:1
+          }, {
+            name:'投资目标',
+            kind:2
+          }, {
+            name:'风险承受',
+            kind:3
+          }, {
+            name:'投资经验',
+            kind:4
+          }
+        ],
         recommends:[
           {
             label:'推荐',
@@ -161,7 +85,6 @@
         ],
         loading:false,
         userInfo:{},
-        options: [],
         post:{
           title:'',
           content:'',
@@ -263,9 +186,6 @@
     },
     mounted(){
       let self = this
-      self.$fun.get(`${process.env.API.API}/admin/news/arc`,{rows:100},res=>{
-        self.options = res.data
-      })
       if(self.$route&&self.$route.query.aid){
         self.$fun.get(`${process.env.API.API}/admin/news/info`,{aid:self.$route.query.aid},res=>{
           self.post.title = res.data.title

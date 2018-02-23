@@ -10,7 +10,7 @@ export default new Router({
     {
       path: '/',
       name: 'Index',
-      // redirect: '/build',
+      redirect: '/news',
       component: Index
     },
     {
@@ -59,6 +59,17 @@ export default new Router({
       path: '/user/identify',
       name: 'UserIdentify',
       component: resolve=>require(['@/pages/User/Identify'],resolve)
+    },
+    //问卷管理
+    {
+      path: '/questionnaire',
+      name: 'questionnaire',
+      component: resolve=>require(['@/pages/Questionnaire/Index'],resolve)
+    },
+    {
+      path: '/questionnaire/add',
+      name: 'questionnaireAdd',
+      component: resolve=>require(['@/pages/Questionnaire/Add'],resolve)
     },
   ]
 })

@@ -12,9 +12,9 @@
             <el-select v-model="post.code" placeholder="请选择">
               <el-option
                 v-for="item in options"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value">
+                :key="item.code"
+                :label="item.name"
+                :value="item.code">
               </el-option>
             </el-select>
           </li>
@@ -23,6 +23,48 @@
               *分类名称
             </span>
             <el-input v-model="post.name"></el-input>
+          </li>
+          <li>
+            <span>
+              排序
+            </span>
+            <el-input v-model="post.sort"></el-input>
+          </li>
+          <li v-show="!post.code">
+            <span>
+              *路由
+            </span>
+            <el-input v-model="post.url"></el-input>
+          </li>
+          <li>
+            <span>
+              icon
+            </span>
+            <el-upload
+              class="avatar-uploader"
+              :action="serverUrl"
+              :headers="header"
+              :show-file-list="false"
+              :on-success="uploadShow"
+              :before-upload="beforeAvatarUpload">
+              <img v-if="imageUrl" :src="imageUrl" class="avatar">
+              <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+            </el-upload>
+          </li>
+          <li>
+            <span>
+              封面
+            </span>
+            <el-upload
+              class="avatar-uploader"
+              :action="serverUrl"
+              :headers="header"
+              :show-file-list="false"
+              :on-success="coverShow"
+              :before-upload="beforeAvatarUpload">
+              <img v-if="coverUrl" :src="coverUrl" class="avatar">
+              <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+            </el-upload>
           </li>
         </ul>
         <div class="subBtn" @click="sub">
@@ -36,33 +78,97 @@
   export default {
     data() {
       return {
-        editorOption:{},
+        serverUrl: `${process.env.API.API}/upload`,
+        imageUrl: '',
+        coverUrl:'',
+        header: {Authorization: sessionStorage.authorization},
         loading:false,
         userInfo:{},
-        options: [{
-          value: '选项1',
-          label: '黄金糕'
-        }, {
-          value: '选项2',
-          label: '双皮奶'
-        }],
+        options: [],
         post:{
           name:'',
           code:'',
+          sort:'',
+          url:'',
+          icon_fid:'',
+          cover_fid:''
         }
       }
     },
     methods: {
       sub(){
         let self = this
-        self.$fun.post(`${process.env.API.API}/admin/news/arc`,self.post,res=>{
-          console.log(res)
-        })
+        if(self.post.code){
+          if(!self.post.name){
+            self.$notify({
+              message:'请填写完内容',
+              type: 'warning'
+            });
+            return false
+          }
+        }else{
+          if(!self.post.name||!self.post.url){
+            self.$notify({
+              message:'请填写完内容',
+              type: 'warning'
+            });
+            return false
+          }
+        }
 
-//        self.$http.post(`${process.env.API.API}/admin/news/arc`,self.post).then(res=>{
-//          console.log(res)
-//        })
-      }
+        if(self.$route&&self.$route.query.code){
+          self.$fun.put(`${process.env.API.API}/admin/news/arc`,self.post,res=>{
+            if(res.errcode=='0'){
+              self.$notify({
+                message:'修改成功',
+                type: 'success'
+              });
+              self.$router.push('/news/categoryList')
+            }
+          })
+        }else{
+          self.$fun.post(`${process.env.API.API}/admin/news/arc`,self.post,res=>{
+            if(res.errcode=='0'){
+              self.$notify({
+                message:'提交成功',
+                type: 'success'
+              });
+              this.$router.push('/news/categoryList')
+            }
+          })
+        }
+      },
+      uploadShow(res, file) {
+        if(res.errcode=='0'){
+          this.post.icon_fid = res.fileinfo.fid
+        }
+        this.imageUrl = URL.createObjectURL(file.raw);
+      },
+      coverShow(res, file) {
+        if(res.errcode=='0'){
+          this.post.cover_fid = res.fileinfo.fid
+        }
+        this.coverUrl = URL.createObjectURL(file.raw);
+      },
+      beforeAvatarUpload(file) {
+        if (file.type == 'image/jpeg' || file.type == 'image/jpg' || file.type == 'image/png' || file.type == 'image/bmp') {
+
+        } else {
+          this.$notify({
+            message:'图片格式有误',
+            type: 'warning'
+          });
+          return false
+        }
+        const isLt5M = file.size / 1024 / 1024 < 5;
+        if (!isLt5M) {
+          this.$notify({
+            message:'图片不能超过5MB!',
+            type: 'warning'
+          });
+        }
+        return isLt5M;
+      },
     },
     created() {
       let self = this
@@ -73,15 +179,23 @@
     },
     mounted(){
       let self = this
-
-//      self.$http.get(`${process.env.API.API}/dict/brand`,{params:{rows:20,p:1}}).then(res=>{
-//        if(res.data.errcode=='0'){
-//          self.lists.list = res.data.data
-//          self.lists.page = res.data.page
-//        }
-//      }).catch(err=>{
-//        console.log(err)
-//      })
+      self.$fun.get(`${process.env.API.API}/admin/news/fmtcate`,{},res=>{
+        self.options = res.data
+      })
+      if(self.$route&&self.$route.query.code){
+        self.$fun.get(`${process.env.API.API}/admin/news/arci`,{code:self.$route.query.code},res=>{
+          self.post.name = res.data.name
+          self.post.sort = res.data.sort
+          self.post.cover_fid = res.data.cover_fid
+          self.post.icon_fid = res.data.icon_fid
+          self.post.url = res.data.url
+          self.post.id = res.data.id
+          self.post.code = res.data.parent
+          self.post.self_code = self.$route.query.code
+          self.imageUrl = res.data.icon_pic
+          self.coverUrl = res.data.cover_pic
+        })
+      }
     },
     //获取底部组件
     components: {

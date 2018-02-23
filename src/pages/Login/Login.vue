@@ -76,14 +76,14 @@
         if(self.msg){
           return false
         }else{
-          self.$fun.post(`${process.env.API.API}/admin/ali`,{username:self.post.user,password:SHA1(self.post.password)},res=>{
+          self.$fun.post(`${process.env.API.API}/admin/ali`,{username:self.post.user,password:SHA1(`${self.post.user}_${self.post.password}`)},res=>{
             if(res.errcode=='0'){
               self.$notify({
                 message:self.$t('loginSuccess'),
                 type: 'success'
               });
-              localStorage.setItem('authorization',res.authorization)
-              self.$router.push('/')
+              sessionStorage.setItem('authorization',res.authorization)
+              self.$router.push('/news')
             }else{
               self.$notify({
                 message:res.data.errmsg,
@@ -96,9 +96,6 @@
     },
     mounted(){
       localStorage.removeItem('authorization')
-      this.$http.get(`${process.env.API.API}/ad/index`).then(res=>{
-        console.log(res)
-      })
     }
   }
 </script>

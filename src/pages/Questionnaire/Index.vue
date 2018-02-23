@@ -1,6 +1,6 @@
 <template>
   <div class="home">
-    <left-nav :num="0"></left-nav>
+    <left-nav :num="1"></left-nav>
     <div class="main" v-loading="loading">
       <public-head></public-head>
       <div class="mainWrap">

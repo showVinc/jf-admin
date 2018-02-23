@@ -25,7 +25,6 @@
           {
             name:'资讯管理',
             content:{
-              name:'文章管理',
               children:[
                 {
                   name:'文章列表',
@@ -36,12 +35,27 @@
                   url:'/news/add'
                 },
                 {
-                  name:'资讯分类',
-                  url:'/news/category'
+                  name:'分类列表',
+                  url:'/news/categoryList'
                 },
                 {
-                  name:'资讯列表',
-                  url:'/news/categoryList'
+                  name:'新增分类',
+                  url:'/news/category'
+                },
+              ]
+            }
+          },
+          {
+            name:'问卷管理',
+            content:{
+              children:[
+                {
+                  name:'问卷列表',
+                  url:'/questionnaire'
+                },
+                {
+                  name:'新增问卷',
+                  url:'/questionnaire/add'
                 }
               ]
             }
@@ -49,17 +63,7 @@
           {
             name:'用户管理',
             content:{
-              name:'文章管理',
-              children:[
-                {
-                  name:'文章列表',
-                  url:'/news'
-                },
-                {
-                  name:'测试多数据',
-                  url:'/news/detail'
-                }
-              ]
+              children:[]
             }
           },
         ],

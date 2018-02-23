@@ -27,8 +27,8 @@ Vue.use(VueQuillEditor)
 Vue.use(ElementUI)
 
 router.beforeEach((to, from, next) => {
-  let authorization = localStorage.getItem('authorization')
-  if(to.path=='/'){
+  let authorization = sessionStorage.getItem('authorization')
+  if(to.path=='/'||to.path=='/news'||to.path=='/news/category'){
     if(!authorization){
       router.push({name:'Login',query:{random:Math.random()}})
     }
