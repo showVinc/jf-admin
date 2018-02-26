@@ -1,6 +1,6 @@
 <template>
   <div class="home">
-    <left-nav :num="0"></left-nav>
+    <left-nav :num="1"></left-nav>
     <div class="main" v-loading="loading">
       <public-head></public-head>
       <div class="mainWrap">
@@ -8,29 +8,28 @@
           :data="tableData"
           style="width: 100%">
           <el-table-column
-            prop="name"
-            label="分类名称">
+            prop="title"
+            label="标题">
           </el-table-column>
           <el-table-column
-            prop="level"
-            label="分类级别"
-            width="100">
+            prop="description"
+            label="描述"
+            width="220">
           </el-table-column>
           <el-table-column
-            width="120"
-            prop="parent.name"
-            label="所属分类">
+            prop="score_lower"
+            label="低分"
+            width="60">
+          </el-table-column>
+          <el-table-column
+            prop="score_high"
+            label="高分"
+            width="60">
           </el-table-column>
           <el-table-column
             label="操作"
             width="120">
             <template slot-scope="scope">
-              <el-button
-                @click.native.prevent="editor(scope.$index)"
-                type="text"
-                size="small">
-                编辑
-              </el-button>
               <el-button
                 @click.native.prevent="deleteRow(scope.$index)"
                 type="text"
@@ -47,8 +46,8 @@
             @current-change="handleCurrentChange">
           </el-pagination>
         </div>
-        <div class="subBtn" @click="$router.push('/news/Category')">
-          新增资讯分类
+        <div class="subBtn" @click="$router.push('/questionnaire/scoreAdd')">
+          新增评分
         </div>
       </div>
     </div>
@@ -60,26 +59,22 @@
       return {
         page:{
           p:1,
-          total_count:10
+          total_pages:10
         },
         tableData: [],
         loading:false,
-        userInfo:{},
         post:{}
       }
     },
     methods: {
       sub(){
-
+        console.log(this.post)
       },
       handleCurrentChange(val){
         let self = this
         self.loading = true
         self.tableData = []
-        self.$fun.get(`${process.env.API.API}/admin/news/arc`,{rows:10,p:val},res=>{
-          for(let v of res.data){
-            v.publish_time = self.$moment(v.publish_time * 1000).format('YYYY-MM-DD HH:mm')
-          }
+        self.$fun.get(`${process.env.API.API}/admin/qunn/score`,{rows:10,p:val},res=>{
           self.tableData = res.data
           self.page = res.page
         })
@@ -87,13 +82,9 @@
           self.loading = false
         },600)
       },
-      editor(index){
-        let self = this
-        self.$router.push({path:'/news/category',query:{code:self.tableData[index].code}})
-      },
       deleteRow(index){
         let self = this
-        self.$fun.delete(`${process.env.API.API}/admin/news/arc`,{id:self.tableData[index].id},res=>{
+        self.$fun.delete(`${process.env.API.API}/admin/qunn/score`,{id:self.tableData[index].id},res=>{
           if(res.errcode=='0'){
             self.tableData.splice(index,1)
           }
@@ -106,9 +97,9 @@
     },
     mounted(){
       let self = this
-      self.$fun.get(`${process.env.API.API}/admin/news/arc`,{rows:10},res=>{
-        self.page = res.page
+      self.$fun.get(`${process.env.API.API}/admin/qunn/score`,{rows:10},res=>{
         self.tableData = res.data
+        self.page = res.page
       })
     },
     //获取底部组件

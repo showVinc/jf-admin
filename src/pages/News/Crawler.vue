@@ -1,6 +1,6 @@
 <template>
   <div class="home">
-    <left-nav :num="1"></left-nav>
+    <left-nav :num="0"></left-nav>
     <div class="main" v-loading="loading">
       <public-head></public-head>
       <div class="mainWrap">
@@ -9,41 +9,36 @@
           style="width: 100%">
           <el-table-column
             prop="title"
-            label="标题">
+            label="文章标题">
           </el-table-column>
           <el-table-column
-            prop="kind_name"
-            label="分类"
-            width="120">
+            prop="publish_time"
+            label="发布时间"
+            width="160">
           </el-table-column>
           <el-table-column
             label="操作"
             width="120">
             <template slot-scope="scope">
               <el-button
-              @click.native.prevent="editor(scope.$index)"
+              @click.native.prevent="getUrl(scope.$index)"
               type="text"
               size="small">
-              编辑
-              </el-button>
-              <el-button
-              @click.native.prevent="deleteRow(scope.$index)"
-              type="text"
-              size="small">
-              删除
+              获取数据
               </el-button>
               </template>
           </el-table-column>
         </el-table>
-        <div class="block" v-show="page.total_count>10">
-          <el-pagination
-            layout="prev, pager, next"
-            :total="page.total_count"
-            @current-change="handleCurrentChange">
-          </el-pagination>
-        </div>
-        <div class="subBtn" @click="$router.push('/questionnaire/add')">
-          新增问卷
+        <ul>
+          <li>
+            <span>
+              *爬取链接
+            </span>
+            <el-input v-model="url"></el-input>
+          </li>
+        </ul>
+        <div class="subBtn" @click="getData">
+          获取列表
         </div>
       </div>
     </div>
@@ -53,10 +48,7 @@
   export default {
     data() {
       return {
-        page:{
-          p:1,
-          total_pages:10
-        },
+        url:'',
         tableData: [],
         loading:false,
         userInfo:{},
@@ -64,36 +56,24 @@
       }
     },
     methods: {
-      sub(){
-        console.log(this.post.content)
-      },
-      handleCurrentChange(val){
+      getData(){
         let self = this
-        self.loading = true
-        self.tableData = []
-        self.$fun.get(`${process.env.API.API}/admin/news/arts`,{rows:10,p:val},res=>{
-          for(let v of res.data){
-            v.publish_time = self.$moment(v.publish_time * 1000).format('YYYY-MM-DD HH:mm')
-          }
+        self.$fun.get(`${process.env.API.API}/admin/news/worm`,{u:self.url},res=>{
           self.tableData = res.data
-          self.page = res.page
         })
-        setTimeout(()=>{
-          self.loading = false
-        },600)
       },
-      editor(index){
+      getUrl(index){
         let self = this
-        self.$router.push({path:'/questionnaire/add',query:{qid:self.tableData[index].qid}})
-      },
-      deleteRow(index){
-        let self = this
-        self.$fun.delete(`${process.env.API.API}/admin/qunn/ques`,{qid:self.tableData[index].qid},res=>{
+        self.$fun.get(`${process.env.API.API}/admin/news/worm`,{u:self.tableData[index].url,kind:2},res=>{
           if(res.errcode=='0'){
+            self.$notify({
+              message:self.$t('获取成功'),
+              type: 'success'
+            });
             self.tableData.splice(index,1)
           }
         })
-      },
+      }
     },
     created() {
       let self = this
@@ -101,13 +81,6 @@
     },
     mounted(){
       let self = this
-      self.$fun.get(`${process.env.API.API}/admin/qunn/ques`,{rows:10},res=>{
-        for(let v of res.data){
-          v.publish_time = self.$moment(v.publish_time * 1000).format('YYYY-MM-DD HH:mm')
-        }
-        self.tableData = res.data
-        self.page = res.page
-      })
     },
     //获取底部组件
     components: {
@@ -127,6 +100,24 @@
         box-sizing: border-box;
         display: flex;
         flex-direction: column;
+        ul{
+          margin-top: 50px;
+          width: 100%;
+          margin-bottom: 15px;
+          li{
+            display: flex;
+            margin-bottom: 15px;
+            font-size: 14px;
+            color: #606266;
+            span{
+              width: 100px;
+              display: flex;
+              padding-top: 8px;
+              justify-content: flex-end;
+              margin-right: 10px;
+            }
+          }
+        }
         .subBtn{
           width: 100px;
           height: 36px;

@@ -86,7 +86,7 @@
               self.$router.push('/news')
             }else{
               self.$notify({
-                message:res.data.errmsg,
+                message:res.errmsg,
                 type: 'warning'
               });
             }

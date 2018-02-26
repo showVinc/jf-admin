@@ -1,5 +1,7 @@
 import axios from 'axios'
 import store from '@/store'
+import Vue from 'vue'
+import { Message } from 'element-ui'
 
 let service = axios.create({
   headers: {}

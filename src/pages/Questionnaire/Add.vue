@@ -15,7 +15,7 @@
             <span>
               *类型
             </span>
-            <el-select v-model="post.category_code" placeholder="请选择">
+            <el-select v-model="post.kind" placeholder="请选择">
               <el-option
                 v-for="item in list"
                 :key="item.kind"
@@ -28,16 +28,23 @@
             <span>
               排序
             </span>
-            <el-input v-model="post.source"></el-input>
+            <el-input v-model="post.sort" type="number"></el-input>
           </li>
         </ul>
-        <ul>
-          <li v-for="item,index in options">
-            选项{{index+1}}
-            <el-input v-model="item.content" style="width: 400px"></el-input>
-            <el-input v-model="item.score" style="width: 100px"></el-input>
+        <ul class="options">
+          <li v-for="item,index in post.selection">
+            <span>
+              选项{{index+1}}
+            </span>
+            <div>
+              <input type="text" v-model="item.selection" class="first">
+              <input type="text" v-model="item.score" class="last">
+            </div>
           </li>
         </ul>
+        <div class="add" @click="addOption()">
+          <img src="../../assets/images/public_img/add.png">
+        </div>
         <div class="subBtn" @click="sub">
           发布
         </div>
@@ -52,12 +59,6 @@
       return {
         serverUrl: `${process.env.API.API}/upload`,
         imageUrl: '',
-        options:[
-          {
-            content:'',
-            score:''
-          }
-        ],
         list:[
           {
             name:'财务状况',
@@ -87,46 +88,56 @@
         userInfo:{},
         post:{
           title:'',
-          content:'',
-          category_code: '',
-          author:'',
-          cover_fid:'',
-          pv:'',
-          is_recommend:'',
-          summary:'',
-          source:''
+          kind:'',
+          sort:'',
+          selection:[
+            {
+              selection:'',
+              score:''
+            }
+          ]
         }
       }
     },
     methods: {
+      addOption(){
+        let self = this
+        if(self.post.selection.length>8){
+          return false
+        }
+        self.post.selection.push({
+          content:'',
+          score:''
+        })
+      },
       sub(){
         let self = this
-        if(!self.post.title||!self.post.category_code||!self.post.cover_fid||!self.post.summary||!self.post.content){
+        if(!self.post.title||!self.post.kind){
           self.$notify({
             message:'请填写完内容',
             type: 'warning'
           });
           return false
         }
-        if(self.$route&&self.$route.query.aid){
-          self.post.aid = self.$route.query.aid
-          self.$fun.put(`${process.env.API.API}/admin/news/arts`,self.post,res=>{
+        if(self.$route&&self.$route.query.qid){
+          self.post.qid = self.$route.query.qid
+          self.$fun.put(`${process.env.API.API}/admin/qunn/ques`,self.post,res=>{
             if(res.errcode=='0'){
               self.$notify({
                 message:'修改成功',
                 type: 'success'
               });
-              self.$router.push('/news')
+              self.$router.push('/questionnaire')
             }
           })
         }else{
-          self.$fun.post(`${process.env.API.API}/admin/news/arts`,self.post,res=>{
+          self.$fun.post(`${process.env.API.API}/admin/qunn/ques`,self.post,res=>{
             if(res.errcode=='0'){
               self.$notify({
                 message:'提交成功',
                 type: 'success'
               });
-              self.$router.push('/news')
+              self.$router.push('/questionnaire')
             }
           })
         }
@@ -155,49 +166,20 @@
           });
         }
         return isLt5M;
-      },
-      uploadSuccess(res, file) {
-        // res为图片服务器返回的数据
-        // 获取富文本组件实例
-        let quill = this.$refs.myQuillEditor.quill
-        // 如果上传成功
-        if (res.errcode == '0') {
-          // 获取光标所在位置
-          let length = quill.getSelection().index;
-          // 插入图片  res.info为服务器返回的图片地址
-          let url = `${process.env.API.API}/media/getfile/${res.fileinfo.fid}?editor=${SHA1('news')}`
-          quill.insertEmbed(length, 'image',url)
-          // 调整光标到最后
-          quill.setSelection(length + 1)
-        } else {
-          this.$notify({
-            message:'上传失败',
-            type: 'warning'
-          });
-        }
-      },
+      }
     },
     created() {
       let self = this
       window.scrollTo(0,0)
-      setTimeout(()=>{
-        self.userInfo = self.$store.state.userInfo
-      },300)
     },
     mounted(){
       let self = this
-      if(self.$route&&self.$route.query.aid){
-        self.$fun.get(`${process.env.API.API}/admin/news/info`,{aid:self.$route.query.aid},res=>{
+      if(self.$route&&self.$route.query.qid){
+        self.$fun.get(`${process.env.API.API}/admin/qunn/quesinfo`,{qid:self.$route.query.qid},res=>{
           self.post.title = res.data.title
-          self.post.content = res.data.content
-          self.post.category_code =res.data.category_code
-          self.post.source = res.data.source
-          self.post.summary = res.data.summary
-          self.post.cover_fid = res.data.cover_fid
-          self.post.pv = res.data.pv?res.data.pv:''
-          self.post.author = res.data.author?res.data.author:''
-          self.post.is_recommend = res.data.is_recommend
-          self.imageUrl = res.data.cover_pic
+          self.post.kind = res.data.kind
+          self.post.sort = res.data.sort
+          self.post.selection = res.data.selection
         })
       }
     },
@@ -236,6 +218,29 @@
             }
           }
         }
+        .options{
+          li{
+            display: flex;
+            div{
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              width: calc(~'100% - 100px');
+              input{
+                border:1px solid #bfcbd9;
+                height: 36px;
+                padding: 3px 10px;
+                border-radius: 4px;
+                &.first{
+                  width: calc(~'100% - 100px');
+                }
+                &.last{
+                  width: 80px;
+                }
+              }
+            }
+          }
+        }
         .subBtn{
           width: 100px;
           height: 36px;
@@ -246,6 +251,9 @@
           border: 1px solid #ccc;
           font-size: 14px;
           margin: 50px auto 0;
+        }
+        .add{
+          margin: 0 auto;
         }
       }
     }

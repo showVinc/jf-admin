@@ -257,9 +257,6 @@
     created() {
       let self = this
       window.scrollTo(0,0)
-      setTimeout(()=>{
-        self.userInfo = self.$store.state.userInfo
-      },300)
     },
     mounted(){
       let self = this

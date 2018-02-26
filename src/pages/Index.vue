@@ -36,21 +36,9 @@
     created() {
       let self = this
       window.scrollTo(0,0)
-      setTimeout(()=>{
-        self.userInfo = self.$store.state.userInfo
-      },300)
     },
     mounted(){
       let self = this
-
-//      self.$http.get(`${process.env.API.API}/dict/brand`,{params:{rows:20,p:1}}).then(res=>{
-//        if(res.data.errcode=='0'){
-//          self.lists.list = res.data.data
-//          self.lists.page = res.data.page
-//        }
-//      }).catch(err=>{
-//        console.log(err)
-//      })
     },
     //获取底部组件
     components: {}

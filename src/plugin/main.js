@@ -30,7 +30,7 @@ export default {
   async post(url,data,cb) {
     try {
       const value = await axios.post(url,data)
-      if(value.data.errcode=='0'){
+      if(value.data.errcode=='0'||value.data.errcode=='40004'){
         cb(value.data)
       }
       return value;

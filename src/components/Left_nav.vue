@@ -42,6 +42,10 @@
                   name:'新增分类',
                   url:'/news/category'
                 },
+                {
+                  name:'网站爬虫',
+                  url:'/news/crawler'
+                },
               ]
             }
           },
@@ -56,6 +60,14 @@
                 {
                   name:'新增问卷',
                   url:'/questionnaire/add'
+                },
+                {
+                  name:'评分列表',
+                  url:'/questionnaire/score'
+                },
+                {
+                  name:'新增评分',
+                  url:'/questionnaire/scoreAdd'
                 }
               ]
             }
