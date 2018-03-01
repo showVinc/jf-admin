@@ -30,7 +30,7 @@
             </span>
             <el-input v-model="post.sort"></el-input>
           </li>
-          <li v-show="!post.code">
+          <li>
             <span>
               *路由
             </span>
